@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StyleTextView">
+        <attr name="txtCapitals" format="boolean"/>
+        <attr name="txtTypeFont" format="enum">
+            <enum name="black" value="1"/>
+            <enum name="bold" value="2"/>
+            <enum name="regular" value="3"/>
+            <enum name="light" value="4"/>
+            <enum name="thin" value="5"/>
+            <enum name="logotype" value="6"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="StyleButton">
+        <attr name="btnCapitals" format="boolean"/>
+        <attr name="btnTypeFont" format="enum">
+            <enum name="black" value="1"/>
+            <enum name="bold" value="2"/>
+            <enum name="regular" value="3"/>
+            <enum name="light" value="4"/>
+            <enum name="thin" value="5"/>
+        </attr>
+    </declare-styleable>
+
+</resources>
