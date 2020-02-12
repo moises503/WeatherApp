@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -22,6 +23,7 @@ import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
+import com.sngular.core.arch.ScreenState
 import com.sngular.core.navigation.BaseFragment
 import com.sngular.core.util.setToolbar
 import com.sngular.core.util.toast
@@ -29,24 +31,23 @@ import com.sngular.wheatherapp.BuildConfig
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
-import com.sngular.wheatherapp.presentation.ClimateContract
+import com.sngular.wheatherapp.presentation.ClimateState
+import com.sngular.wheatherapp.presentation.ClimateViewModel
 import com.sngular.wheatherapp.presentation.view.MainActivity
 import com.sngular.wheatherapp.presentation.view.forecast.ForecastKey
 import com.sngular.wheatherapp.presentation.view.weather.location.LocationListener
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_current_weather.*
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CurrentWeatherFragment : BaseFragment(), ClimateContract.CurrentWeatherView {
-
-    private val climatePresenter: ClimateContract.Presenter
-            by inject { parametersOf(this) }
+class CurrentWeatherFragment : BaseFragment() {
 
     private lateinit var locationListener: LocationListener
     private var locationManager: LocationManager? = null
     private var lastLocation: android.location.Location? = null
     private lateinit var currentCity: String
+    private val climateViewModel: ClimateViewModel by viewModel()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +58,9 @@ class CurrentWeatherFragment : BaseFragment(), ClimateContract.CurrentWeatherVie
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        climateViewModel.climateState.observe(viewLifecycleOwner, Observer {
+            updateUI(it)
+        })
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -67,7 +71,7 @@ class CurrentWeatherFragment : BaseFragment(), ClimateContract.CurrentWeatherVie
         }
         pbSwipeMain.setOnRefreshListener {
             lastLocation?.let {
-                climatePresenter.retrieveCurrentClimate(Location(it.latitude, it.longitude))
+                climateViewModel.retrieveCurrentClimate(Location(it.latitude, it.longitude))
             }
         }
         btnShowForecast.setOnClickListener {
@@ -79,24 +83,42 @@ class CurrentWeatherFragment : BaseFragment(), ClimateContract.CurrentWeatherVie
     }
 
     override fun onDestroy() {
-        climatePresenter.onStop()
         stopTracking()
         super.onDestroy()
     }
 
-    override fun showLoader() {
+    private fun updateUI(screenState: ScreenState<ClimateState>?) {
+        when (screenState) {
+            ScreenState.Loading -> showLoader()
+            is ScreenState.Render -> processWeatherState(screenState.data)
+        }
+    }
+
+
+    private fun processWeatherState(climateState: ClimateState) {
+        hideLoader()
+        when (climateState) {
+            is ClimateState.SuccessClimate -> displayCurrentWeather(
+                climateState.currentClimate,
+                climateState.animation
+            )
+            is ClimateState.Error -> showError(climateState.error)
+        }
+    }
+
+    private fun showLoader() {
         pbSwipeMain?.isRefreshing = true
     }
 
-    override fun hideLoader() {
+    private fun hideLoader() {
         pbSwipeMain?.isRefreshing = false
     }
 
-    override fun showError(message: String) {
+    private fun showError(message: String) {
         context?.toast(message)
     }
 
-    override fun displayCurrentWeather(currentClimate: CurrentClimate, animation: String) {
+    private fun displayCurrentWeather(currentClimate: CurrentClimate, animation: String) {
         lytCurrentWeather?.visibility = View.VISIBLE
         anCurrentWeather?.setAnimation(animation)
         anCurrentWeather?.playAnimation()
@@ -210,7 +232,7 @@ class CurrentWeatherFragment : BaseFragment(), ClimateContract.CurrentWeatherVie
         initializeLocationManager()
         locationListener = LocationListener(LocationManager.GPS_PROVIDER) { location ->
             lastLocation = location
-            climatePresenter.retrieveCurrentClimate(Location(location.latitude, location.longitude))
+            climateViewModel.retrieveCurrentClimate(Location(location.latitude, location.longitude))
         }
 
         try {

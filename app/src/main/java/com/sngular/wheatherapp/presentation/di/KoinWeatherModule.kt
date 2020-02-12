@@ -15,10 +15,11 @@ import com.sngular.wheatherapp.domain.datasource.ClimateDataSource
 import com.sngular.wheatherapp.domain.provider.ClimateUseCaseProvider
 import com.sngular.wheatherapp.domain.repository.ClimateRepository
 import com.sngular.wheatherapp.presentation.ClimateContract
-import com.sngular.wheatherapp.presentation.ClimatePresenterImpl
 import com.sngular.wheatherapp.presentation.ClimateUseCaseProviderImpl
+import com.sngular.wheatherapp.presentation.ClimateViewModel
 import com.sngular.wheatherapp.presentation.view.res.ClimateStringResourcesImpl
 import org.koin.dsl.module
+import org.koin.androidx.viewmodel.dsl.viewModel
 import retrofit2.Retrofit
 
 fun providesPromotionsEndPoint(retrofit: Retrofit): EndPoint =
@@ -87,7 +88,5 @@ val weatherModule = module {
     single { providesClimateRepository(get()) }
     single { providesClimateStringResources(get()) }
     single { providesClimateUseCaseProvider(get(), get(), get()) }
-    factory<ClimateContract.Presenter> { (v: ClimateContract.BaseView) ->
-        ClimatePresenterImpl(get(), v, get())
-    }
+    viewModel { ClimateViewModel(get(), get()) }
 }

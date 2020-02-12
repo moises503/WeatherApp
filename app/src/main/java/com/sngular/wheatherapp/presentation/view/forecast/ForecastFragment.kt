@@ -8,29 +8,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.sngular.core.arch.ScreenState
 import com.sngular.core.navigation.BaseFragment
 import com.sngular.core.util.setToolbar
 import com.sngular.core.util.toast
-
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
-import com.sngular.wheatherapp.presentation.ClimateContract
+import com.sngular.wheatherapp.presentation.ClimateState
+import com.sngular.wheatherapp.presentation.ClimateViewModel
 import com.sngular.wheatherapp.presentation.view.forecast.adapter.ForecastClimateAdapter
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_forecast.*
-import org.koin.android.ext.android.inject
-import org.koin.core.parameter.parametersOf
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-
-class ForecastFragment : BaseFragment(), ClimateContract.ForecastClimateView {
+class ForecastFragment : BaseFragment() {
 
     private var currentCity = ""
     private var lastLocation: Location? = null
-    private val climatePresenter: ClimateContract.Presenter
-            by inject { parametersOf(this) }
     private lateinit var forecastClimateAdapter: ForecastClimateAdapter
+    private val climateViewModel: ClimateViewModel by viewModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +47,9 @@ class ForecastFragment : BaseFragment(), ClimateContract.ForecastClimateView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        climateViewModel.climateState.observe(viewLifecycleOwner, Observer {
+            updateUI(it)
+        })
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -56,7 +59,7 @@ class ForecastFragment : BaseFragment(), ClimateContract.ForecastClimateView {
             )
         }
         lastLocation?.let {
-            climatePresenter.retrieveForecastClimate(
+            climateViewModel.retrieveForecastClimate(
                 com.sngular.wheatherapp.domain.models.Location(
                     it.latitude,
                     it.longitude
@@ -66,7 +69,7 @@ class ForecastFragment : BaseFragment(), ClimateContract.ForecastClimateView {
         txtForecastCity?.text = String.format(getString(R.string.each_for), currentCity)
         pbSwipeForecast.setOnRefreshListener {
             lastLocation?.let {
-                climatePresenter.retrieveForecastClimate(
+                climateViewModel.retrieveForecastClimate(
                     com.sngular.wheatherapp.domain.models.Location(
                         it.latitude,
                         it.longitude
@@ -81,19 +84,34 @@ class ForecastFragment : BaseFragment(), ClimateContract.ForecastClimateView {
         }
     }
 
-    override fun showLoader() {
+    private fun updateUI(screenState: ScreenState<ClimateState>?) {
+        when (screenState) {
+            ScreenState.Loading -> showLoader()
+            is ScreenState.Render -> processForecastState(screenState.data)
+        }
+    }
+
+    private fun processForecastState(forecastState : ClimateState) {
+        hideLoader()
+        when(forecastState) {
+            is ClimateState.SuccessForeCast -> displayForecastClimate(forecastState.forecastClimate)
+            is ClimateState.Error -> showError(forecastState.error)
+        }
+    }
+
+    private fun showLoader() {
         pbSwipeForecast?.isRefreshing = true
     }
 
-    override fun hideLoader() {
+    private fun hideLoader() {
         pbSwipeForecast?.isRefreshing = false
     }
 
-    override fun showError(message: String) {
+    private fun showError(message: String) {
         context?.toast(message)
     }
 
-    override fun displayForecastClimate(forecastClimate: ForecastClimate) {
+    private fun displayForecastClimate(forecastClimate: ForecastClimate) {
         val context = lstForecast.context
         val controller =
             AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_right)
