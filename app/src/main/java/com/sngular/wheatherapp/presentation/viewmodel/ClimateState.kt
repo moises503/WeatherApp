@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation
+package com.sngular.wheatherapp.presentation.viewmodel
 
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate

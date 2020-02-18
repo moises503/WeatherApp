@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation
+package com.sngular.wheatherapp.presentation.presenter
 
 import com.sngular.core.arch.threads.JobScheduler
 import com.sngular.core.arch.threads.UIScheduler

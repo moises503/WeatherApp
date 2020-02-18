@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.forecast
+package com.sngular.wheatherapp.presentation.view.ui.forecast
 
 import android.annotation.SuppressLint
 import android.location.Location
@@ -10,5 +10,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ForecastKey(val tag: String, val city: String, val location: Location?) : BaseKey() {
     constructor(city: String, location: Location?) : this("ForecastKey", city, location)
-    override fun createFragment(): BaseFragment = ForecastFragment()
+    override fun createFragment(): BaseFragment =
+        ForecastFragment()
 }

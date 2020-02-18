@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.weather.location
+package com.sngular.wheatherapp.presentation.view.ui.weather.location
 
 import android.location.Location
 import android.os.Bundle

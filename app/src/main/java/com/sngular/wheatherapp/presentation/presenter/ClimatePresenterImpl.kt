@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation
+package com.sngular.wheatherapp.presentation.presenter
 
 import com.sngular.core.arch.BasePresenter
 import com.sngular.core.arch.Observer

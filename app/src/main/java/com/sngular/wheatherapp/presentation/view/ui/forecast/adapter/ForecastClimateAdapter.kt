@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.forecast.adapter
+package com.sngular.wheatherapp.presentation.view.ui.forecast.adapter
 
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +17,9 @@ class ForecastClimateAdapter(private var weatherDates: List<WeatherDate> = empty
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastClimateViewHolder =
-        ForecastClimateViewHolder(parent.inflate(R.layout.item_forecast_climate))
+        ForecastClimateViewHolder(
+            parent.inflate(R.layout.item_forecast_climate)
+        )
 
     override fun getItemCount(): Int = weatherDates.size
 

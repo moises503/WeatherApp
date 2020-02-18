@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.weather
+package com.sngular.wheatherapp.presentation.view.ui.weather
 
 import android.Manifest
 import android.content.Context
@@ -31,11 +31,11 @@ import com.sngular.wheatherapp.BuildConfig
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
-import com.sngular.wheatherapp.presentation.ClimateState
-import com.sngular.wheatherapp.presentation.ClimateViewModel
-import com.sngular.wheatherapp.presentation.view.MainActivity
-import com.sngular.wheatherapp.presentation.view.forecast.ForecastKey
-import com.sngular.wheatherapp.presentation.view.weather.location.LocationListener
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateViewModel
+import com.sngular.wheatherapp.presentation.view.ui.MainActivity
+import com.sngular.wheatherapp.presentation.view.ui.forecast.ForecastKey
+import com.sngular.wheatherapp.presentation.view.ui.weather.location.LocationListener
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_current_weather.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -58,9 +58,7 @@ class CurrentWeatherFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        climateViewModel.climateState.observe(viewLifecycleOwner, Observer {
-            updateUI(it)
-        })
+        climateViewModel.climateState.observe(::getLifecycle, ::updateUI)
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -76,7 +74,12 @@ class CurrentWeatherFragment : BaseFragment() {
         }
         btnShowForecast.setOnClickListener {
             context?.let {
-                MainActivity[it].navigateTo(ForecastKey(currentCity, lastLocation))
+                MainActivity[it].navigateTo(
+                    ForecastKey(
+                        currentCity,
+                        lastLocation
+                    )
+                )
             }
         }
         checkIfHasPermissionsAndStartLocationTracking()
@@ -230,10 +233,18 @@ class CurrentWeatherFragment : BaseFragment() {
 
     fun startTracking() {
         initializeLocationManager()
-        locationListener = LocationListener(LocationManager.GPS_PROVIDER) { location ->
-            lastLocation = location
-            climateViewModel.retrieveCurrentClimate(Location(location.latitude, location.longitude))
-        }
+        locationListener =
+            LocationListener(
+                LocationManager.GPS_PROVIDER
+            ) { location ->
+                lastLocation = location
+                climateViewModel.retrieveCurrentClimate(
+                    Location(
+                        location.latitude,
+                        location.longitude
+                    )
+                )
+            }
 
         try {
             locationManager?.requestLocationUpdates(

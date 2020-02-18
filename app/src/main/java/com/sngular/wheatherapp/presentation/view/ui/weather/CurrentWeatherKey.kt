@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.weather
+package com.sngular.wheatherapp.presentation.view.ui.weather
 
 import android.annotation.SuppressLint
 import com.sngular.core.navigation.BaseFragment
@@ -9,5 +9,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class CurrentWeatherKey(val tag: String) : BaseKey() {
     constructor() : this("CurrentWeatherKey")
-    override fun createFragment(): BaseFragment = CurrentWeatherFragment()
+    override fun createFragment(): BaseFragment =
+        CurrentWeatherFragment()
 }

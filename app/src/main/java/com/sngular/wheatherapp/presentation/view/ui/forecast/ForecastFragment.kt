@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation.view.forecast
+package com.sngular.wheatherapp.presentation.view.ui.forecast
 
 
 import android.location.Location
@@ -16,9 +16,9 @@ import com.sngular.core.util.setToolbar
 import com.sngular.core.util.toast
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
-import com.sngular.wheatherapp.presentation.ClimateState
-import com.sngular.wheatherapp.presentation.ClimateViewModel
-import com.sngular.wheatherapp.presentation.view.forecast.adapter.ForecastClimateAdapter
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
+import com.sngular.wheatherapp.presentation.view.ui.forecast.adapter.ForecastClimateAdapter
+import com.sngular.wheatherapp.presentation.viewmodel.ForecastViewModel
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_forecast.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,7 +29,7 @@ class ForecastFragment : BaseFragment() {
     private var currentCity = ""
     private var lastLocation: Location? = null
     private lateinit var forecastClimateAdapter: ForecastClimateAdapter
-    private val climateViewModel: ClimateViewModel by viewModel()
+    private val forecastViewModel: ForecastViewModel by viewModel()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,9 +47,7 @@ class ForecastFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        climateViewModel.climateState.observe(viewLifecycleOwner, Observer {
-            updateUI(it)
-        })
+        forecastViewModel.forecastState.observe(::getLifecycle, ::updateUI)
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -59,7 +57,7 @@ class ForecastFragment : BaseFragment() {
             )
         }
         lastLocation?.let {
-            climateViewModel.retrieveForecastClimate(
+            forecastViewModel.retrieveForecastClimate(
                 com.sngular.wheatherapp.domain.models.Location(
                     it.latitude,
                     it.longitude
@@ -69,7 +67,7 @@ class ForecastFragment : BaseFragment() {
         txtForecastCity?.text = String.format(getString(R.string.each_for), currentCity)
         pbSwipeForecast.setOnRefreshListener {
             lastLocation?.let {
-                climateViewModel.retrieveForecastClimate(
+                forecastViewModel.retrieveForecastClimate(
                     com.sngular.wheatherapp.domain.models.Location(
                         it.latitude,
                         it.longitude
@@ -77,7 +75,8 @@ class ForecastFragment : BaseFragment() {
                 )
             }
         }
-        forecastClimateAdapter = ForecastClimateAdapter()
+        forecastClimateAdapter =
+            ForecastClimateAdapter()
         lstForecast?.apply {
             adapter = forecastClimateAdapter
             layoutManager = LinearLayoutManager(context)

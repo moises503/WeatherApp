@@ -1,11 +1,11 @@
-package com.sngular.wheatherapp.presentation.view
+package com.sngular.wheatherapp.presentation.view.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
 import com.sngular.core.navigation.BaseKey
 import com.sngular.core.navigation.BaseNavigationActivity
 import com.sngular.wheatherapp.R
-import com.sngular.wheatherapp.presentation.view.weather.CurrentWeatherKey
+import com.sngular.wheatherapp.presentation.view.ui.weather.CurrentWeatherKey
 
 class MainActivity : BaseNavigationActivity() {
 
@@ -13,7 +13,8 @@ class MainActivity : BaseNavigationActivity() {
 
     override fun getFragmentContainer(): Int = R.id.fragments_container
 
-    override fun defaultFirstKey(): BaseKey = CurrentWeatherKey()
+    override fun defaultFirstKey(): BaseKey =
+        CurrentWeatherKey()
 
     override fun getSystemService(name: String): Any? = when (name) {
         TAG -> this

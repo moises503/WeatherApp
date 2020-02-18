@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.*
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
-import com.sngular.wheatherapp.presentation.ClimateContract
+import com.sngular.wheatherapp.presentation.presenter.ClimateContract
 import com.sngular.wheatherapp.seeds.ClimateSeeder
 import org.junit.Before
 import org.junit.Rule

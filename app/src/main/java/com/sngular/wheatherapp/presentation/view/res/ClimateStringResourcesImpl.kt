@@ -2,7 +2,7 @@ package com.sngular.wheatherapp.presentation.view.res
 
 import android.content.Context
 import com.sngular.wheatherapp.R
-import com.sngular.wheatherapp.presentation.ClimateContract
+import com.sngular.wheatherapp.presentation.presenter.ClimateContract
 
 class ClimateStringResourcesImpl(private val context: Context) : ClimateContract.StringResources {
 

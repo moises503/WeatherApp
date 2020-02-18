@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation
+package com.sngular.wheatherapp.presentation.presenter
 
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
@@ -19,11 +19,13 @@ interface ClimateContract {
         fun displayForecastClimate(forecastClimate: ForecastClimate)
     }
 
-    interface CurrentWeatherView : BaseView {
+    interface CurrentWeatherView :
+        BaseView {
         override fun displayForecastClimate(forecastClimate: ForecastClimate) = Unit
     }
 
-    interface ForecastClimateView : BaseView {
+    interface ForecastClimateView :
+        BaseView {
         override fun displayCurrentWeather(currentClimate: CurrentClimate, animation: String) =
             Unit
     }

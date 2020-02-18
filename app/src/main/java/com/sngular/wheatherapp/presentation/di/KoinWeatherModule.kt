@@ -14,10 +14,13 @@ import com.sngular.wheatherapp.data.repository.ClimateRepositoryImpl
 import com.sngular.wheatherapp.domain.datasource.ClimateDataSource
 import com.sngular.wheatherapp.domain.provider.ClimateUseCaseProvider
 import com.sngular.wheatherapp.domain.repository.ClimateRepository
-import com.sngular.wheatherapp.presentation.ClimateContract
-import com.sngular.wheatherapp.presentation.ClimateUseCaseProviderImpl
-import com.sngular.wheatherapp.presentation.ClimateViewModel
+import com.sngular.wheatherapp.domain.usecase.CurrentClimateUseCase
+import com.sngular.wheatherapp.domain.usecase.ForecastClimateUseCase
+import com.sngular.wheatherapp.presentation.presenter.ClimateContract
+import com.sngular.wheatherapp.presentation.presenter.ClimateUseCaseProviderImpl
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateViewModel
 import com.sngular.wheatherapp.presentation.view.res.ClimateStringResourcesImpl
+import com.sngular.wheatherapp.presentation.viewmodel.ForecastViewModel
 import org.koin.dsl.module
 import org.koin.androidx.viewmodel.dsl.viewModel
 import retrofit2.Retrofit
@@ -75,7 +78,22 @@ fun providesClimateUseCaseProvider(
     climateRepository: ClimateRepository,
     uiScheduler: UIScheduler,
     jobScheduler: JobScheduler
-): ClimateUseCaseProvider = ClimateUseCaseProviderImpl(climateRepository, jobScheduler, uiScheduler)
+): ClimateUseCaseProvider =
+    ClimateUseCaseProviderImpl(
+        climateRepository,
+        jobScheduler,
+        uiScheduler
+    )
+
+fun providesCurrentWeatherUseCase(climateRepository: ClimateRepository,
+                                  uiScheduler: UIScheduler,
+                                  jobScheduler: JobScheduler): CurrentClimateUseCase =
+    CurrentClimateUseCase(climateRepository, jobScheduler, uiScheduler)
+
+fun providesForecastClimate(climateRepository: ClimateRepository,
+                            uiScheduler: UIScheduler,
+                            jobScheduler: JobScheduler): ForecastClimateUseCase =
+    ForecastClimateUseCase(climateRepository, jobScheduler, uiScheduler)
 
 val weatherModule = module {
     single { providesPromotionsEndPoint(get()) }
@@ -87,6 +105,8 @@ val weatherModule = module {
     single { providesClimateDataSource(get(), get(), get()) }
     single { providesClimateRepository(get()) }
     single { providesClimateStringResources(get()) }
-    single { providesClimateUseCaseProvider(get(), get(), get()) }
+    single { providesCurrentWeatherUseCase(get(), get(), get()) }
+    single { providesForecastClimate(get(), get(), get()) }
     viewModel { ClimateViewModel(get(), get()) }
+    viewModel { ForecastViewModel(get(), get()) }
 }

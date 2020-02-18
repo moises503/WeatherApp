@@ -1,4 +1,4 @@
-package com.sngular.wheatherapp.presentation
+package com.sngular.wheatherapp.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,36 +8,31 @@ import com.sngular.core.arch.ScreenState
 import com.sngular.core.util.IconUtil
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
-import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
-import com.sngular.wheatherapp.domain.provider.ClimateUseCaseProvider
+import com.sngular.wheatherapp.domain.usecase.CurrentClimateUseCase
+import com.sngular.wheatherapp.presentation.presenter.ClimateContract
 
 class ClimateViewModel(
-    private val climateUseCaseProvider: ClimateUseCaseProvider,
+    private val currentClimateUseCase: CurrentClimateUseCase,
     private val stringResources: ClimateContract.StringResources
 ) : BaseViewModel() {
 
-    private val _climateState = MutableLiveData<ScreenState<ClimateState>>()
+    private lateinit var _climateState : MutableLiveData<ScreenState<ClimateState>>
 
     val climateState: LiveData<ScreenState<ClimateState>>
-        get() = _climateState
+        get() {
+            if (!::_climateState.isInitialized) {
+                _climateState = MutableLiveData()
+            }
+            return _climateState
+        }
 
     fun retrieveCurrentClimate(location: Location) {
         _climateState.value = ScreenState.Loading
         addDisposable(
-            climateUseCaseProvider.providesCurrentWeatherUseCase()
-                .executeAndReturnDisposable(location, CurrentClimateObserver())
+            currentClimateUseCase.executeAndReturnDisposable(location, CurrentClimateObserver())
         )
     }
 
-    fun retrieveForecastClimate(location: Location) {
-        _climateState.value = ScreenState.Loading
-        addDisposable(
-            climateUseCaseProvider.providesForecastClimate().executeAndReturnDisposable(
-                location,
-                ForecastClimateObserver()
-            )
-        )
-    }
 
     private inner class CurrentClimateObserver : Observer<CurrentClimate>() {
         override fun onSuccess(t: CurrentClimate) {
@@ -56,21 +51,5 @@ class ClimateViewModel(
                 )
             )
         }
-    }
-
-    private inner class ForecastClimateObserver : Observer<ForecastClimate>() {
-
-        override fun onSuccess(t: ForecastClimate) {
-            _climateState.value = ScreenState.Render(ClimateState.SuccessForeCast(t))
-        }
-
-        override fun onError(e: Throwable) {
-            _climateState.value = ScreenState.Render(
-                ClimateState.Error(
-                    e.message ?: stringResources.forecastClimateErrorMessage()
-                )
-            )
-        }
-
     }
 }
