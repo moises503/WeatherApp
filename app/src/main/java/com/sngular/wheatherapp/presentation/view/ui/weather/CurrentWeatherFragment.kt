@@ -58,7 +58,7 @@ class CurrentWeatherFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        climateViewModel.climateState.observe(::getLifecycle, ::updateUI)
+        climateViewModel.climateState(null).observe(::getLifecycle, ::updateUI)
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,

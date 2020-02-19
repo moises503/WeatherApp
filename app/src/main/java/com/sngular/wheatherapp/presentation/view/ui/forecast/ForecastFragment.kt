@@ -47,7 +47,6 @@ class ForecastFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        forecastViewModel.forecastState.observe(::getLifecycle, ::updateUI)
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -57,12 +56,10 @@ class ForecastFragment : BaseFragment() {
             )
         }
         lastLocation?.let {
-            forecastViewModel.retrieveForecastClimate(
-                com.sngular.wheatherapp.domain.models.Location(
-                    it.latitude,
-                    it.longitude
-                )
-            )
+            forecastViewModel.forecastState(com.sngular.wheatherapp.domain.models.Location(
+                it.latitude,
+                it.longitude
+            )).observe(::getLifecycle, ::updateUI)
         }
         txtForecastCity?.text = String.format(getString(R.string.each_for), currentCity)
         pbSwipeForecast.setOnRefreshListener {

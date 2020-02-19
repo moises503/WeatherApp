@@ -26,6 +26,14 @@ class ClimateViewModel(
             return _climateState
         }
 
+    fun climateState(location: Location?) : LiveData<ScreenState<ClimateState>>{
+        if(!::_climateState.isInitialized){
+            _climateState = MutableLiveData()
+            retrieveCurrentClimate(location ?: Location(0.0, 0.0))
+        }
+        return _climateState
+    }
+
     fun retrieveCurrentClimate(location: Location) {
         _climateState.value = ScreenState.Loading
         addDisposable(

@@ -24,6 +24,14 @@ class ForecastViewModel(
             return _forecastState
         }
 
+    fun forecastState(location: Location?): LiveData<ScreenState<ClimateState>>{
+        if (!::_forecastState.isInitialized) {
+            _forecastState = MutableLiveData()
+            retrieveForecastClimate(location ?: Location(0.0,0.0))
+        }
+        return _forecastState
+    }
+
     fun retrieveForecastClimate(location: Location) {
         _forecastState.value = ScreenState.Loading
         addDisposable(
