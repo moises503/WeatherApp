@@ -86,6 +86,8 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
 
 
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'

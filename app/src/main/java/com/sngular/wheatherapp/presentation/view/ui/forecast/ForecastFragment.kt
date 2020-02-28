@@ -1,7 +1,5 @@
 package com.sngular.wheatherapp.presentation.view.ui.forecast
 
-
-import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +14,9 @@ import com.sngular.core.util.setToolbar
 import com.sngular.core.util.toast
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
-import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
+import com.sngular.wheatherapp.presentation.common.CurrentLocation
 import com.sngular.wheatherapp.presentation.view.ui.forecast.adapter.ForecastClimateAdapter
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
 import com.sngular.wheatherapp.presentation.viewmodel.ForecastViewModel
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_forecast.*
@@ -27,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ForecastFragment : BaseFragment() {
 
     private var currentCity = ""
-    private var lastLocation: Location? = null
+    private var lastLocation: CurrentLocation? = null
     private lateinit var forecastClimateAdapter: ForecastClimateAdapter
     private val forecastViewModel: ForecastViewModel by viewModel()
 
@@ -59,7 +58,9 @@ class ForecastFragment : BaseFragment() {
             forecastViewModel.forecastState(com.sngular.wheatherapp.domain.models.Location(
                 it.latitude,
                 it.longitude
-            )).observe(::getLifecycle, ::updateUI)
+            )).observe(viewLifecycleOwner, Observer { forecast ->
+                updateUI(forecast)
+            })
         }
         txtForecastCity?.text = String.format(getString(R.string.each_for), currentCity)
         pbSwipeForecast.setOnRefreshListener {
@@ -77,6 +78,7 @@ class ForecastFragment : BaseFragment() {
         lstForecast?.apply {
             adapter = forecastClimateAdapter
             layoutManager = LinearLayoutManager(context)
+            layoutAnimation = AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_from_right)
         }
     }
 
@@ -108,10 +110,6 @@ class ForecastFragment : BaseFragment() {
     }
 
     private fun displayForecastClimate(forecastClimate: ForecastClimate) {
-        val context = lstForecast.context
-        val controller =
-            AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_from_right)
-        lstForecast?.layoutAnimation = controller
         forecastClimateAdapter.updateDataSet(forecastClimate.weatherDates)
         lstForecast.scheduleLayoutAnimation()
     }

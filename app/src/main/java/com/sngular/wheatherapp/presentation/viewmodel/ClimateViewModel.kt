@@ -9,6 +9,7 @@ import com.sngular.core.util.IconUtil
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
 import com.sngular.wheatherapp.domain.usecase.CurrentClimateUseCase
+import com.sngular.wheatherapp.presentation.common.LocationLiveData
 import com.sngular.wheatherapp.presentation.presenter.ClimateContract
 
 class ClimateViewModel(
@@ -17,16 +18,9 @@ class ClimateViewModel(
 ) : BaseViewModel() {
 
     private lateinit var _climateState : MutableLiveData<ScreenState<ClimateState>>
+    var locationLiveData : LocationLiveData? = null
 
-    val climateState: LiveData<ScreenState<ClimateState>>
-        get() {
-            if (!::_climateState.isInitialized) {
-                _climateState = MutableLiveData()
-            }
-            return _climateState
-        }
-
-    fun climateState(location: Location?) : LiveData<ScreenState<ClimateState>>{
+    fun climateState(location: Location? = null) : LiveData<ScreenState<ClimateState>>{
         if(!::_climateState.isInitialized){
             _climateState = MutableLiveData()
             retrieveCurrentClimate(location ?: Location(0.0, 0.0))

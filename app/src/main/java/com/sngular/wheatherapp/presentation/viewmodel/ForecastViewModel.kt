@@ -16,14 +16,6 @@ class ForecastViewModel(
 ) : BaseViewModel() {
     private lateinit var _forecastState : MutableLiveData<ScreenState<ClimateState>>
 
-    val forecastState: LiveData<ScreenState<ClimateState>>
-        get() {
-            if (!::_forecastState.isInitialized) {
-                _forecastState = MutableLiveData()
-            }
-            return _forecastState
-        }
-
     fun forecastState(location: Location?): LiveData<ScreenState<ClimateState>>{
         if (!::_forecastState.isInitialized) {
             _forecastState = MutableLiveData()

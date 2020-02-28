@@ -3,12 +3,10 @@ package com.sngular.wheatherapp.presentation.view.ui.weather
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,20 +29,19 @@ import com.sngular.wheatherapp.BuildConfig
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.Location
 import com.sngular.wheatherapp.domain.models.current.CurrentClimate
-import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
-import com.sngular.wheatherapp.presentation.viewmodel.ClimateViewModel
+import com.sngular.wheatherapp.presentation.common.CurrentLocation
+import com.sngular.wheatherapp.presentation.common.LocationLiveData
 import com.sngular.wheatherapp.presentation.view.ui.MainActivity
 import com.sngular.wheatherapp.presentation.view.ui.forecast.ForecastKey
-import com.sngular.wheatherapp.presentation.view.ui.weather.location.LocationListener
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
+import com.sngular.wheatherapp.presentation.viewmodel.ClimateViewModel
 import kotlinx.android.synthetic.main.appbar_toolbar.*
 import kotlinx.android.synthetic.main.fragment_current_weather.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CurrentWeatherFragment : BaseFragment() {
 
-    private lateinit var locationListener: LocationListener
-    private var locationManager: LocationManager? = null
-    private var lastLocation: android.location.Location? = null
+    private var lastLocation: CurrentLocation? = null
     private lateinit var currentCity: String
     private val climateViewModel: ClimateViewModel by viewModel()
 
@@ -58,7 +55,6 @@ class CurrentWeatherFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        climateViewModel.climateState(null).observe(::getLifecycle, ::updateUI)
         activity?.let {
             (it as AppCompatActivity).setToolbar(
                 toolbar,
@@ -67,6 +63,7 @@ class CurrentWeatherFragment : BaseFragment() {
                 false
             )
         }
+        climateViewModel.locationLiveData = LocationLiveData(requireContext())
         pbSwipeMain.setOnRefreshListener {
             lastLocation?.let {
                 climateViewModel.retrieveCurrentClimate(Location(it.latitude, it.longitude))
@@ -85,10 +82,6 @@ class CurrentWeatherFragment : BaseFragment() {
         checkIfHasPermissionsAndStartLocationTracking()
     }
 
-    override fun onDestroy() {
-        stopTracking()
-        super.onDestroy()
-    }
 
     private fun updateUI(screenState: ScreenState<ClimateState>?) {
         when (screenState) {
@@ -224,59 +217,14 @@ class CurrentWeatherFragment : BaseFragment() {
             .show()
     }
 
-    private fun initializeLocationManager() {
-        if (locationManager == null) {
-            locationManager =
-                context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        }
-    }
-
     fun startTracking() {
-        initializeLocationManager()
-        locationListener =
-            LocationListener(
-                LocationManager.GPS_PROVIDER
-            ) { location ->
-                lastLocation = location
-                climateViewModel.retrieveCurrentClimate(
-                    Location(
-                        location.latitude,
-                        location.longitude
-                    )
-                )
-            }
-
-        try {
-            locationManager?.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                LOCATION_INTERVAL.toLong(),
-                LOCATION_DISTANCE.toFloat(),
-                locationListener
-            )
-
-            Log.d(TAG, "Location tracking started")
-
-        } catch (ex: SecurityException) {
-            Log.e(TAG, "fail to request location update, ignore", ex)
-        } catch (ex: IllegalArgumentException) {
-            Log.e(TAG, "gps provider does not exist " + ex.localizedMessage)
-        }
-
-    }
-
-    private fun stopTracking() {
-        if (locationManager != null) {
-            try {
-                locationManager?.removeUpdates(locationListener)
-            } catch (ex: Exception) {
-                Log.i(TAG, "fail to remove location listeners, ignore", ex)
-            }
-        }
-    }
-
-    companion object {
-        private val TAG = CurrentWeatherFragment::class.java.simpleName
-        private const val LOCATION_INTERVAL = 500
-        private const val LOCATION_DISTANCE = 10
+        climateViewModel.locationLiveData?.observe(viewLifecycleOwner, Observer { location ->
+            lastLocation = location
+            climateViewModel.climateState(
+                Location(location.latitude, location.longitude)
+            ).observe(viewLifecycleOwner, Observer {
+                updateUI(it)
+            })
+        })
     }
 }

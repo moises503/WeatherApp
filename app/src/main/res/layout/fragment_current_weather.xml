@@ -18,105 +18,111 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?android:attr/actionBarSize"
         >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/lytCurrentWeather"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible">
+            android:paddingBottom="20dp"
+            android:fillViewport="true">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/lytCurrentWeather"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/anCurrentWeather"
-                android:layout_width="0dp"
-                android:layout_height="250dp"
-                android:layout_marginStart="50dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="50dp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true" />
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/anCurrentWeather"
+                    android:layout_width="0dp"
+                    android:layout_height="250dp"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="50dp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true" />
 
-            <com.sngular.core.customview.StyleTextView
-                android:id="@+id/txtCurrentLocation"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="25dp"
-                android:textAlignment="center"
-                android:textSize="22sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/anCurrentWeather"
-                app:txtTypeFont="black"
-                tools:text="Puebla de los Ángeles" />
+                <com.sngular.core.customview.StyleTextView
+                    android:id="@+id/txtCurrentLocation"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="25dp"
+                    android:textAlignment="center"
+                    android:textSize="22sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/anCurrentWeather"
+                    app:txtTypeFont="black"
+                    tools:text="Puebla de los Ángeles" />
 
-            <com.sngular.core.customview.StyleTextView
-                android:id="@+id/txtDescription"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="25dp"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtCurrentLocation"
-                app:txtTypeFont="bold"
-                tools:text="Cielo parcialmente nublado" />
+                <com.sngular.core.customview.StyleTextView
+                    android:id="@+id/txtDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="25dp"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtCurrentLocation"
+                    app:txtTypeFont="bold"
+                    tools:text="Cielo parcialmente nublado" />
 
-            <com.sngular.core.customview.StyleTextView
-                android:id="@+id/txtMinTemperature"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="25dp"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtDescription"
-                app:txtTypeFont="regular"
-                tools:text="Cielo parcialmente nublado" />
+                <com.sngular.core.customview.StyleTextView
+                    android:id="@+id/txtMinTemperature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="25dp"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtDescription"
+                    app:txtTypeFont="regular"
+                    tools:text="Cielo parcialmente nublado" />
 
-            <com.sngular.core.customview.StyleTextView
-                android:id="@+id/txtMaxTemperature"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="25dp"
-                android:textAlignment="center"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtMinTemperature"
-                app:txtTypeFont="regular"
-                tools:text="Cielo parcialmente nublado" />
+                <com.sngular.core.customview.StyleTextView
+                    android:id="@+id/txtMaxTemperature"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="25dp"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtMinTemperature"
+                    app:txtTypeFont="regular"
+                    tools:text="Cielo parcialmente nublado" />
 
-            <com.sngular.core.customview.StyleButton
-                android:id="@+id/btnShowForecast"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginEnd="25dp"
-                android:background="@drawable/btn_ripple_effect"
-                android:text="@string/show_forecast"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                app:btnTypeFont="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtMaxTemperature" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.sngular.core.customview.StyleButton
+                    android:id="@+id/btnShowForecast"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="40dp"
+                    android:background="@drawable/btn_ripple_effect"
+                    android:text="@string/show_forecast"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    app:btnTypeFont="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtMaxTemperature" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
