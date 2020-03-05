@@ -14,15 +14,19 @@ class ForecastViewModel(
     private val forecastClimateUseCase: ForecastClimateUseCase,
     private val stringResources: ClimateContract.StringResources
 ) : BaseViewModel() {
-    private lateinit var _forecastState : MutableLiveData<ScreenState<ClimateState>>
 
-    fun forecastState(location: Location?): LiveData<ScreenState<ClimateState>>{
-        if (!::_forecastState.isInitialized) {
+    private lateinit var _forecastState: MutableLiveData<ScreenState<ClimateState>>
+
+    private val forecastStateMap: Map<Location, LiveData<ScreenState<ClimateState>>> =
+        lazyMap { parameters ->
             _forecastState = MutableLiveData()
-            retrieveForecastClimate(location ?: Location(0.0,0.0))
+            retrieveForecastClimate(parameters)
+            return@lazyMap _forecastState
         }
-        return _forecastState
-    }
+
+    fun forecastStateView(parameters: Location): LiveData<ScreenState<ClimateState>> =
+        forecastStateMap.getValue(parameters)
+
 
     fun retrieveForecastClimate(location: Location) {
         _forecastState.value = ScreenState.Loading
@@ -52,5 +56,14 @@ class ForecastViewModel(
             )
         }
 
+    }
+}
+
+fun <K, V> lazyMap(initializer: (K) -> V): Map<K, V> {
+    val map = mutableMapOf<K, V>()
+    return map.withDefault { key ->
+        val newValue = initializer(key)
+        map[key] = newValue
+        return@withDefault newValue
     }
 }

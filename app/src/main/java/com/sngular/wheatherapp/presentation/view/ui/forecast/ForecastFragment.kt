@@ -9,13 +9,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.sngular.core.arch.ScreenState
+import com.sngular.core.common.GenericDataBindingAdapter
 import com.sngular.core.navigation.BaseFragment
 import com.sngular.core.util.setToolbar
 import com.sngular.core.util.toast
+import com.sngular.wheatherapp.BR
 import com.sngular.wheatherapp.R
 import com.sngular.wheatherapp.domain.models.forecast.ForecastClimate
+import com.sngular.wheatherapp.domain.models.forecast.WeatherDate
 import com.sngular.wheatherapp.presentation.common.CurrentLocation
-import com.sngular.wheatherapp.presentation.view.ui.forecast.adapter.ForecastClimateAdapter
 import com.sngular.wheatherapp.presentation.viewmodel.ClimateState
 import com.sngular.wheatherapp.presentation.viewmodel.ForecastViewModel
 import kotlinx.android.synthetic.main.appbar_toolbar.*
@@ -27,7 +29,7 @@ class ForecastFragment : BaseFragment() {
 
     private var currentCity = ""
     private var lastLocation: CurrentLocation? = null
-    private lateinit var forecastClimateAdapter: ForecastClimateAdapter
+    private lateinit var forecastClimateBindingAdapter: GenericDataBindingAdapter<WeatherDate>
     private val forecastViewModel: ForecastViewModel by viewModel()
 
 
@@ -55,10 +57,12 @@ class ForecastFragment : BaseFragment() {
             )
         }
         lastLocation?.let {
-            forecastViewModel.forecastState(com.sngular.wheatherapp.domain.models.Location(
-                it.latitude,
-                it.longitude
-            )).observe(viewLifecycleOwner, Observer { forecast ->
+            forecastViewModel.forecastStateView(
+                com.sngular.wheatherapp.domain.models.Location(
+                    it.latitude,
+                    it.longitude
+                )
+            ).observe(viewLifecycleOwner, Observer { forecast ->
                 updateUI(forecast)
             })
         }
@@ -73,12 +77,13 @@ class ForecastFragment : BaseFragment() {
                 )
             }
         }
-        forecastClimateAdapter =
-            ForecastClimateAdapter()
+        forecastClimateBindingAdapter =
+            GenericDataBindingAdapter(BR.currentWeather, R.layout.item_forecast_climate)
         lstForecast?.apply {
-            adapter = forecastClimateAdapter
+            adapter = forecastClimateBindingAdapter
             layoutManager = LinearLayoutManager(context)
-            layoutAnimation = AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_from_right)
+            layoutAnimation =
+                AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_from_right)
         }
     }
 
@@ -89,9 +94,9 @@ class ForecastFragment : BaseFragment() {
         }
     }
 
-    private fun processForecastState(forecastState : ClimateState) {
+    private fun processForecastState(forecastState: ClimateState) {
         hideLoader()
-        when(forecastState) {
+        when (forecastState) {
             is ClimateState.SuccessForeCast -> displayForecastClimate(forecastState.forecastClimate)
             is ClimateState.Error -> showError(forecastState.error)
         }
@@ -110,7 +115,7 @@ class ForecastFragment : BaseFragment() {
     }
 
     private fun displayForecastClimate(forecastClimate: ForecastClimate) {
-        forecastClimateAdapter.updateDataSet(forecastClimate.weatherDates)
+        forecastClimateBindingAdapter.setItems(forecastClimate.weatherDates.toMutableList())
         lstForecast.scheduleLayoutAnimation()
     }
 }
